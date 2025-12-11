@@ -2,7 +2,8 @@
 let config = {
   apiKey: '',
   environment: 'prod',
-  defaultOwner: ''
+  defaultOwner: '',
+  useDirectEndpoint: false
 };
 
 // DOM Elements
@@ -56,7 +57,8 @@ function updateEnvironmentDisplay() {
   };
   
   const envName = envMap[config.environment] || 'Unknown';
-  environmentNameEl.textContent = envName;
+  const endpointType = config.useDirectEndpoint ? ' (Direct)' : ' (Gateway)';
+  environmentNameEl.textContent = envName + endpointType;
   
   // Add color coding
   const badge = document.getElementById('environment-badge');
@@ -316,6 +318,7 @@ function calculateAge() {
 function openSettingsModal() {
   document.getElementById('settings-api-key').value = config.apiKey || '';
   document.getElementById('settings-environment').value = config.environment || 'prod';
+  document.getElementById('settings-use-direct-endpoint').checked = config.useDirectEndpoint || false;
   document.getElementById('settings-default-owner').value = config.defaultOwner || '';
   settingsModal.classList.remove('hidden');
 }
@@ -329,6 +332,7 @@ async function saveSettings() {
   const newConfig = {
     apiKey: document.getElementById('settings-api-key').value.trim(),
     environment: document.getElementById('settings-environment').value,
+    useDirectEndpoint: document.getElementById('settings-use-direct-endpoint').checked,
     defaultOwner: document.getElementById('settings-default-owner').value.trim()
   };
   
@@ -387,13 +391,20 @@ async function publishObituary() {
     stage: 'https://osw92dhpje.execute-api.us-east-1.amazonaws.com/stage',
     prod: 'https://eqvuex5md7.execute-api.us-east-1.amazonaws.com/prod'
   };
+  const DIRECT_API_BASE_URLS = {
+    dev: 'https://obit-intake.dev.legint.net/api',
+    stage: 'https://obit-intake.stage.legint.net/api',
+    prod: 'https://obit-intake.prod.legint.net/api'
+  };
   const API_ENDPOINT = '/v1/obituaries/';
-  const baseUrl = API_BASE_URLS[config.environment] || API_BASE_URLS.prod;
+  const baseUrls = config.useDirectEndpoint ? DIRECT_API_BASE_URLS : API_BASE_URLS;
+  const baseUrl = baseUrls[config.environment] || baseUrls.prod;
   const fullUrl = `${baseUrl}${API_ENDPOINT}`;
   
   // Log request to console
   addConsoleEntry('=== API Request ===', 'request');
   addConsoleEntry(`Environment: ${config.environment}`, 'request');
+  addConsoleEntry(`Endpoint Type: ${config.useDirectEndpoint ? 'Direct (bypassing API Gateway)' : 'API Gateway'}`, 'request');
   addConsoleEntry(`Endpoint: ${fullUrl}`, 'request');
   addConsoleEntry('Method: POST', 'request');
   addConsoleEntry('Payload:', 'request');
@@ -403,7 +414,8 @@ async function publishObituary() {
     const result = await window.electronAPI.publishObituary({
       apiKey: config.apiKey,
       environment: config.environment,
-      payload: payload
+      payload: payload,
+      useDirectEndpoint: config.useDirectEndpoint
     });
     
     // Log response to console
@@ -513,7 +525,7 @@ function buildPayload() {
   payload.obituary.obituary_type = obituaryType; // Always include, defaults to 'paid'
   if (emailAddress) payload.obituary.email_address = emailAddress;
   
-  // Source info - fixed to publisher/ipublish for first release
+  // Source info - per engineer feedback: remove source_type and source
   const sourceReferenceId = document.getElementById('source-reference-id').value.trim();
   
   if (!sourceReferenceId) {
@@ -521,9 +533,8 @@ function buildPayload() {
     return null;
   }
   
-  // Source type is always "publisher" and source is always "ipublish" for first release
-  payload.source_info.source_type = 'publisher';
-  payload.source_info.source = 'ipublish';
+  // Per engineer feedback: source_type and source are not needed
+  // Only include source_reference_id
   payload.source_info.source_reference_id = sourceReferenceId;
   
   // Optional owner fields

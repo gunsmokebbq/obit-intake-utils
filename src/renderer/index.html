@@ -186,6 +186,13 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label for="settings-use-direct-endpoint">
+                            <input type="checkbox" id="settings-use-direct-endpoint" style="width: auto; margin-right: 8px;">
+                            Use Direct Endpoint (Bypass API Gateway)
+                        </label>
+                        <small>If checked, uses direct endpoint (e.g., obit-intake.prod.legint.net) instead of AWS API Gateway. May help avoid 403 errors.</small>
+                    </div>
+                    <div class="form-group">
                         <label for="settings-default-owner">Default Owner</label>
                         <input type="text" id="settings-default-owner" placeholder="e.g., chicagotribune">
                         <small>Optional: Default owner value to pre-fill in the form</small>

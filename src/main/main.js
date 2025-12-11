@@ -65,6 +65,7 @@ ipcMain.handle('get-config', async () => {
   return {
     apiKey: '',
     environment: 'prod',
+    useDirectEndpoint: false,
     defaultOwner: ''
   };
 });
@@ -82,9 +83,9 @@ ipcMain.handle('save-config', async (event, config) => {
 });
 
 // Publish obituary
-ipcMain.handle('publish-obituary', async (event, payload) => {
+ipcMain.handle('publish-obituary', async (event, params) => {
   try {
-    const result = await publishObituary(payload);
+    const result = await publishObituary(params);
     return { success: true, data: result };
   } catch (error) {
     console.error('Error publishing obituary:', error);
