@@ -23,12 +23,133 @@ This creates:
 
 ### Build for Windows
 
-```bash
-npm run build:win
-```
+**Step-by-Step Instructions for Non-Technical Users:**
 
-This creates:
-- `dist/iPublish Obituary Publisher Setup 1.0.0.exe` - Windows installer
+#### Step 1: Open Command Prompt
+
+1. Press the **Windows key** (the key with the Windows logo) on your keyboard
+2. Type: `cmd` or `Command Prompt`
+3. Click on **"Command Prompt"** or **"Windows Command Processor"** when it appears
+4. A black window will open - this is where you'll type commands
+
+**Alternative:** You can also press `Windows Key + R`, type `cmd`, and press Enter.
+
+#### Step 2: Navigate to the Project Folder
+
+1. In the Command Prompt window, you'll see a line that looks like:
+   ```
+   C:\Users\YourName>
+   ```
+   (YourName will be your actual username)
+
+2. You need to navigate to where the project folder is located. For example, if the project is in:
+   - `C:\Users\YourName\Documents\Code\obit-intake-utils`
+   - Or `C:\Projects\obit-intake-utils`
+   - Or wherever you saved/cloned the project
+
+3. Type the following command, replacing the path with your actual project location:
+   ```
+   cd C:\Users\YourName\Documents\Code\obit-intake-utils
+   ```
+   (Replace the path with where YOUR project folder is located)
+
+4. Press **Enter**
+
+5. You should now see the prompt change to show the project folder path:
+   ```
+   C:\Users\YourName\Documents\Code\obit-intake-utils>
+   ```
+
+**Tip:** If you're not sure where the project folder is:
+- Open File Explorer (Windows Key + E)
+- Navigate to the project folder
+- Click in the address bar at the top
+- Copy the full path (Ctrl + C)
+- In Command Prompt, type `cd ` (with a space after cd)
+- Right-click in the Command Prompt window and select "Paste"
+- Press Enter
+
+#### Step 3: Verify You're in the Right Place
+
+1. Type this command and press Enter:
+   ```
+   dir
+   ```
+   (This shows the files in the current folder)
+
+2. You should see files like:
+   - `package.json`
+   - `README.md`
+   - `src` (folder)
+   - `node_modules` (folder)
+   - etc.
+
+3. If you don't see `package.json`, you're in the wrong folder. Go back to Step 2.
+
+#### Step 4: Install Dependencies (First Time Only)
+
+**Only do this step if you haven't built the app before on this computer.**
+
+1. Type this command and press Enter:
+   ```
+   npm install
+   ```
+
+2. Wait for it to finish. You'll see lots of text scrolling by - this is normal. It may take 1-2 minutes.
+
+3. When it's done, you'll see your prompt again (the `>` symbol).
+
+4. If you see any errors in red, contact your IT support.
+
+#### Step 5: Build the Windows Application
+
+1. Type this command and press Enter:
+   ```
+   npm run build:win
+   ```
+
+2. **This will take several minutes** (5-10 minutes is normal). You'll see:
+   - Text scrolling by
+   - Messages about "packaging" and "downloading"
+   - Progress indicators
+
+3. **DO NOT CLOSE THE WINDOW** while it's building. Wait until you see the prompt (`>`) again.
+
+4. When it's finished, you should see a message like:
+   ```
+   • building        target=NSIS arch=x64
+   • building        target=portable arch=x64
+   ```
+
+#### Step 6: Find Your Built Applications
+
+1. The built files are in a folder called `dist` inside your project folder.
+
+2. To open it, you can:
+   - **Option A:** In Command Prompt, type:
+     ```
+     explorer dist
+     ```
+     Press Enter. This will open the `dist` folder in File Explorer.
+
+   - **Option B:** Open File Explorer manually:
+     - Press `Windows Key + E`
+     - Navigate to your project folder
+     - Double-click the `dist` folder
+
+3. Inside the `dist` folder, you should see:
+   - **`iPublish Obituary Publisher Setup 1.0.0.exe`** - This is the installer (recommended to share)
+   - **`iPublish Obituary Publisher-1.0.0-win.zip`** - This is the portable version (no installation needed)
+
+#### Step 7: Test the Build (Optional but Recommended)
+
+1. Double-click the **`iPublish Obituary Publisher Setup 1.0.0.exe`** file
+2. Follow the installation wizard
+3. Launch the app to make sure it works
+4. If it works, you're ready to distribute!
+
+**What Gets Created:**
+- `dist/iPublish Obituary Publisher Setup 1.0.0.exe` - Windows installer (recommended)
 - `dist/iPublish Obituary Publisher-1.0.0-win.zip` - Portable version (no installation needed)
 
 ### Build for Both Platforms
@@ -114,17 +235,14 @@ npm run build:all
 
 ### Building Windows App on Mac
 
-You can build Windows apps on Mac, but it requires Wine:
+**Note:** For best results, build Windows apps on a Windows machine. However, if you only have a Mac available, you can build Windows apps using Wine (advanced - not recommended for non-technical users).
 
-```bash
-# Install Wine (using Homebrew)
-brew install wine-stable
+If you need to build on Mac:
+1. Install Wine (requires Homebrew)
+2. Run the build command
+3. Test thoroughly on a Windows machine before distributing
 
-# Then build
-npm run build:win
-```
-
-**Note:** For best compatibility, build Windows apps on a Windows machine when possible.
+**For non-technical users:** It's strongly recommended to use a Windows computer to build Windows applications.
 
 ### Building Mac App on Windows
 
@@ -158,11 +276,76 @@ After changing, rebuild the app.
 
 ## Troubleshooting
 
+### "npm is not recognized" or "npm: command not found"
+
+**Problem:** Node.js is not installed or not in your system PATH.
+
+**Solution:**
+1. Download Node.js from https://nodejs.org/
+2. Install it (use the LTS version)
+3. **Restart your computer** after installation
+4. Open a **new** Command Prompt window
+5. Try the build command again
+
+### "cd: cannot find the path specified"
+
+**Problem:** The folder path is incorrect or the project folder doesn't exist at that location.
+
+**Solution:**
+1. Open File Explorer (Windows Key + E)
+2. Navigate to your project folder
+3. Click in the address bar at the top
+4. Copy the full path (Ctrl + C)
+5. In Command Prompt, type `cd ` (with a space)
+6. Right-click in Command Prompt and select "Paste"
+7. Press Enter
+
+### Build Takes a Very Long Time
+
+**This is normal!** The first build can take 10-15 minutes because it needs to download Electron (a large file, ~100MB). Subsequent builds are faster.
+
+**What to do:**
+- Be patient
+- Don't close the Command Prompt window
+- Make sure you have a good internet connection
+- The build will complete - just wait for the prompt (`>`) to return
+
 ### Build Fails with "Icon not found"
 
-The build will still work without icons, but you'll see warnings. Either:
-1. Add icon files to `assets/` directory, or
-2. Remove icon references from `package.json` build config
+**This is not an error** - it's just a warning. The build will still work without icons. Electron Builder will use default icons.
+
+**You can ignore this warning.** If you want to add custom icons later, see the Customization section.
+
+### "Error: EACCES: permission denied"
+
+**Problem:** You don't have permission to write files in the project folder.
+
+**Solution:**
+1. Make sure you're not running Command Prompt as Administrator (you usually don't need to)
+2. Check that you have write permissions to the project folder
+3. Try moving the project to your Documents folder or Desktop
+4. If using a work computer, contact IT support
+
+### Build Succeeds But Files Are Missing
+
+**Problem:** Files might be in a different location than expected.
+
+**Solution:**
+1. In Command Prompt, type: `dir dist`
+2. This will show all files in the dist folder
+3. If the folder is empty, the build may have failed silently
+4. Scroll up in the Command Prompt window to look for error messages (usually in red)
+5. Try building again
+
+### "Cannot find module" Errors
+
+**Problem:** Dependencies are not installed.
+
+**Solution:**
+1. Make sure you're in the project folder (see Step 2)
+2. Run: `npm install`
+3. Wait for it to complete
+4. Try building again: `npm run build:win`
 
 ### "Code signing" Errors (macOS)
 
@@ -231,19 +414,47 @@ When releasing a new version:
 
 ## Quick Reference
 
+### Windows Commands (Copy and Paste These)
+
+**Open Command Prompt:**
+- Press Windows Key, type `cmd`, press Enter
+
+**Navigate to project folder:**
+```
+cd C:\path\to\your\project\obit-intake-utils
+```
+(Replace with your actual project path)
+
+**Install dependencies (first time only):**
+```
+npm install
+```
+
+**Build Windows app:**
+```
+npm run build:win
+```
+
+**Open the dist folder:**
+```
+explorer dist
+```
+
+### Mac Commands
+
 ```bash
 # Build Mac app
 npm run build:mac
 
-# Build Windows app
+# Build Windows app (requires Wine)
 npm run build:win
 
 # Build both
 npm run build:all
-
-# Output location
-dist/
 ```
+
+### Output Location
+All built files are in the `dist/` folder inside your project directory.
 
 ## Support
 
