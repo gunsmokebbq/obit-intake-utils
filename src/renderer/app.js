@@ -17,6 +17,8 @@ const clearBtn = document.getElementById('clear-btn');
 const publishBtn = document.getElementById('publish-btn');
 const statusMessage = document.getElementById('status-message');
 const resultsSection = document.getElementById('results-section');
+const consoleContent = document.getElementById('console-content');
+const clearConsoleBtn = document.getElementById('clear-console-btn');
 // Removed sourceTypeSelect and publisherFields - no longer needed
 
 // Initialize application
@@ -24,6 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadConfig();
   setupEventListeners();
   populateDefaults();
+  addConsoleEntry('Application initialized', 'info');
 });
 
 // Load configuration
@@ -80,6 +83,22 @@ function setupEventListeners() {
   dateOfBirthInput.addEventListener('blur', calculateAge);
   dateOfDeathInput.addEventListener('blur', calculateAge);
   
+  // Default publish end date to publish start date
+  const publishStartDateInput = document.getElementById('publish-start-date');
+  const publishEndDateInput = document.getElementById('publish-end-date');
+  
+  publishStartDateInput.addEventListener('change', () => {
+    if (publishStartDateInput.value && !publishEndDateInput.value) {
+      publishEndDateInput.value = publishStartDateInput.value;
+    }
+  });
+  
+  // Clear console
+  clearConsoleBtn.addEventListener('click', () => {
+    consoleContent.innerHTML = '';
+    addConsoleEntry('Console cleared', 'info');
+  });
+  
   // Close modal on outside click
   settingsModal.addEventListener('click', (e) => {
     if (e.target === settingsModal) {
@@ -95,6 +114,49 @@ function populateDefaults() {
   }
   // Set default obituary type to "paid"
   document.getElementById('obituary-type').value = 'paid';
+}
+
+// Console logging functions
+function addConsoleEntry(message, type = 'info') {
+  const timestamp = new Date().toLocaleTimeString();
+  const entry = document.createElement('div');
+  entry.className = 'console-entry';
+  
+  let className = '';
+  switch(type) {
+    case 'request':
+      className = 'console-request';
+      break;
+    case 'response':
+      className = 'console-response';
+      break;
+    case 'error':
+      className = 'console-error';
+      break;
+    case 'success':
+      className = 'console-success';
+      break;
+    default:
+      className = '';
+  }
+  
+  entry.innerHTML = `<span class="console-timestamp">[${timestamp}]</span><span class="${className}">${escapeHtml(message)}</span>`;
+  consoleContent.appendChild(entry);
+  consoleContent.scrollTop = consoleContent.scrollHeight;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function logToConsole(data, type) {
+  if (typeof data === 'object') {
+    addConsoleEntry(JSON.stringify(data, null, 2), type);
+  } else {
+    addConsoleEntry(String(data), type);
+  }
 }
 
 // Calculate age from date of birth and date of death
@@ -250,6 +312,12 @@ async function publishObituary() {
   statusMessage.classList.add('hidden');
   resultsSection.classList.add('hidden');
   
+  // Log request to console
+  addConsoleEntry('=== API Request ===', 'request');
+  addConsoleEntry(`Endpoint: ${config.environment}`, 'request');
+  addConsoleEntry('Payload:', 'request');
+  logToConsole(payload, 'request');
+  
   try {
     const result = await window.electronAPI.publishObituary({
       apiKey: config.apiKey,
@@ -257,13 +325,21 @@ async function publishObituary() {
       payload: payload
     });
     
+    // Log response to console
     if (result.success) {
+      addConsoleEntry('=== API Response (Success) ===', 'success');
+      logToConsole(result.data, 'success');
       showSuccess(result.data);
     } else {
+      addConsoleEntry('=== API Response (Error) ===', 'error');
+      addConsoleEntry(`Status Code: ${result.statusCode || 'N/A'}`, 'error');
+      logToConsole(result.error, 'error');
       showError(result.error, result.statusCode);
     }
   } catch (error) {
     console.error('Error publishing obituary:', error);
+    addConsoleEntry('=== API Error ===', 'error');
+    logToConsole(error.message || 'An unexpected error occurred', 'error');
     showError(error.message || 'An unexpected error occurred');
   } finally {
     publishBtn.disabled = false;

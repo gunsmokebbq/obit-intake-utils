@@ -65,8 +65,8 @@
                         </div>
                         <div class="form-group">
                             <label for="age">Age</label>
-                            <input type="number" id="age" min="0" max="150" readonly>
-                            <small>Auto-calculated from dates of birth and death</small>
+                            <input type="number" id="age" min="0" max="150">
+                            <small>Auto-calculated from dates of birth and death (can be edited)</small>
                         </div>
                     </div>
                 </section>
@@ -144,6 +144,15 @@
             <div id="results-section" class="results-section hidden">
                 <h2>Publish Results</h2>
                 <div id="results-content"></div>
+            </div>
+
+            <!-- API Console Section -->
+            <div id="console-section" class="console-section">
+                <div class="console-header">
+                    <h2>API Console</h2>
+                    <button id="clear-console-btn" class="btn-secondary btn-small">Clear</button>
+                </div>
+                <div id="console-content" class="console-content"></div>
             </div>
         </main>
     </div>
