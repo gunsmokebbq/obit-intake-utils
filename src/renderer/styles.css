@@ -148,6 +148,12 @@ header h1 {
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
+.form-group input[readonly] {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+    color: #6c757d;
+}
+
 .form-group textarea {
     resize: vertical;
     min-height: 150px;
