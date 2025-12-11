@@ -27,7 +27,7 @@
   },
   "build": {
     "appId": "com.legacy.obit-intake-utils",
-    "productName": "Obituary Publisher",
+    "productName": "iPublish Obituary Publisher",
     "directories": {
       "output": "dist"
     },
@@ -38,21 +38,36 @@
     "mac": {
       "category": "public.app-category.utilities",
       "target": [
-        "dmg",
-        "zip"
-      ],
-      "icon": "assets/icon.icns"
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
+      ]
     },
     "win": {
       "target": [
-        "nsis",
-        "portable"
-      ],
-      "icon": "assets/icon.ico"
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64", "ia32"]
+        }
+      ]
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "dmg": {
+      "title": "${productName} ${version}"
     }
   }
 }
