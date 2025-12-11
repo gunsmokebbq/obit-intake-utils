@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Obituary Publisher</title>
+    <title>iPublish Obituary Publisher</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Obituary Publisher</h1>
+            <h1>iPublish Obituary Publisher</h1>
             <button id="settings-btn" class="btn-secondary">⚙️ Settings</button>
         </header>
 
@@ -65,7 +65,8 @@
                         </div>
                         <div class="form-group">
                             <label for="age">Age</label>
-                            <input type="number" id="age" min="0" max="150">
+                            <input type="number" id="age" min="0" max="150" readonly>
+                            <small>Auto-calculated from dates of birth and death</small>
                         </div>
                     </div>
                 </section>
@@ -87,21 +88,12 @@
                             <label for="publish-end-date">Publish End Date</label>
                             <input type="date" id="publish-end-date">
                         </div>
-                        <div class="form-group">
-                            <label for="print-start-date">Print Start Date</label>
-                            <input type="date" id="print-start-date">
-                        </div>
-                        <div class="form-group">
-                            <label for="print-end-date">Print End Date</label>
-                            <input type="date" id="print-end-date">
-                        </div>
                     </div>
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="obituary-type">Obituary Type</label>
                             <select id="obituary-type">
-                                <option value="">-- Select --</option>
-                                <option value="paid">Paid</option>
+                                <option value="paid" selected>Paid</option>
                                 <option value="free">Free</option>
                             </select>
                         </div>

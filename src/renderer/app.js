@@ -63,6 +63,7 @@ function setupEventListeners() {
   clearBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to clear all form data?')) {
       form.reset();
+      document.getElementById('age').value = ''; // Clear calculated age
       resultsSection.classList.add('hidden');
       statusMessage.classList.add('hidden');
       populateDefaults();
@@ -70,6 +71,14 @@ function setupEventListeners() {
   });
   
   // Source type is now fixed to "publisher", no event listener needed
+  
+  // Age calculation from DOB and DOD
+  const dateOfBirthInput = document.getElementById('date-of-birth');
+  const dateOfDeathInput = document.getElementById('date-of-death');
+  const ageInput = document.getElementById('age');
+  
+  dateOfBirthInput.addEventListener('blur', calculateAge);
+  dateOfDeathInput.addEventListener('blur', calculateAge);
   
   // Close modal on outside click
   settingsModal.addEventListener('click', (e) => {
@@ -83,6 +92,93 @@ function setupEventListeners() {
 function populateDefaults() {
   if (config.defaultOwner) {
     document.getElementById('owner').value = config.defaultOwner;
+  }
+  // Set default obituary type to "paid"
+  document.getElementById('obituary-type').value = 'paid';
+}
+
+// Calculate age from date of birth and date of death
+function calculateAge() {
+  const dobStr = document.getElementById('date-of-birth').value.trim();
+  const dodStr = document.getElementById('date-of-death').value.trim();
+  const ageInput = document.getElementById('age');
+  
+  // Clear age if we don't have both dates
+  if (!dobStr || !dodStr) {
+    ageInput.value = '';
+    return;
+  }
+  
+  // Parse MMDDYYYY format
+  // Handle partial dates (00 for unknown month/day)
+  const parseMMDDYYYY = (dateStr) => {
+    if (!/^(0[1-9]|1[0-2]|00)(0[1-9]|[12][0-9]|3[01]|00)(1[7-9]|20)\d{2}$/.test(dateStr)) {
+      return null;
+    }
+    
+    const month = parseInt(dateStr.substring(0, 2));
+    const day = parseInt(dateStr.substring(2, 4));
+    const year = parseInt(dateStr.substring(4, 8));
+    
+    // If month or day is 00, we can't calculate exact age
+    if (month === 0 || day === 0) {
+      return { year, month, day, isPartial: true };
+    }
+    
+    return { year, month, day, isPartial: false };
+  };
+  
+  const dob = parseMMDDYYYY(dobStr);
+  const dod = parseMMDDYYYY(dodStr);
+  
+  if (!dob || !dod) {
+    ageInput.value = '';
+    return;
+  }
+  
+  // If either date is partial, we can only estimate based on years
+  if (dob.isPartial || dod.isPartial) {
+    const age = dod.year - dob.year;
+    if (age >= 0 && age <= 150) {
+      ageInput.value = age;
+    } else {
+      ageInput.value = '';
+    }
+    return;
+  }
+  
+  // Calculate exact age
+  try {
+    const birthDate = new Date(dob.year, dob.month - 1, dob.day);
+    const deathDate = new Date(dod.year, dod.month - 1, dod.day);
+    
+    if (isNaN(birthDate.getTime()) || isNaN(deathDate.getTime())) {
+      ageInput.value = '';
+      return;
+    }
+    
+    if (deathDate < birthDate) {
+      ageInput.value = '';
+      return;
+    }
+    
+    let age = dod.year - dob.year;
+    const monthDiff = dod.month - dob.month;
+    const dayDiff = dod.day - dob.day;
+    
+    // Adjust if birthday hasn't occurred yet in death year
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+    
+    if (age >= 0 && age <= 150) {
+      ageInput.value = age;
+    } else {
+      ageInput.value = '';
+    }
+  } catch (error) {
+    console.error('Error calculating age:', error);
+    ageInput.value = '';
   }
 }
 
@@ -229,17 +325,19 @@ function buildPayload() {
     payload.person.date_of_death = dateOfDeath;
   }
   
+  // Include age if calculated or manually entered
   if (age) {
-    payload.person.age = parseInt(age);
+    const ageNum = parseInt(age);
+    if (!isNaN(ageNum) && ageNum >= 0 && ageNum <= 150) {
+      payload.person.age = ageNum;
+    }
   }
   
   // Obituary
   const obituaryText = document.getElementById('obituary-text').value.trim();
   const publishStartDate = document.getElementById('publish-start-date').value;
   const publishEndDate = document.getElementById('publish-end-date').value;
-  const printStartDate = document.getElementById('print-start-date').value;
-  const printEndDate = document.getElementById('print-end-date').value;
-  const obituaryType = document.getElementById('obituary-type').value;
+  const obituaryType = document.getElementById('obituary-type').value || 'paid'; // Default to 'paid'
   const emailAddress = document.getElementById('email-address').value.trim();
   
   if (!obituaryText) {
@@ -255,9 +353,7 @@ function buildPayload() {
   payload.obituary.obituary_text = obituaryText;
   payload.obituary.publish_start_date = publishStartDate;
   if (publishEndDate) payload.obituary.publish_end_date = publishEndDate;
-  if (printStartDate) payload.obituary.print_start_date = printStartDate;
-  if (printEndDate) payload.obituary.print_end_date = printEndDate;
-  if (obituaryType) payload.obituary.obituary_type = obituaryType;
+  payload.obituary.obituary_type = obituaryType; // Always include, defaults to 'paid'
   if (emailAddress) payload.obituary.email_address = emailAddress;
   
   // Source info - fixed to publisher/ipublish for first release
