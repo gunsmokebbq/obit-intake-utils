@@ -19,6 +19,7 @@ const statusMessage = document.getElementById('status-message');
 const resultsSection = document.getElementById('results-section');
 const consoleContent = document.getElementById('console-content');
 const clearConsoleBtn = document.getElementById('clear-console-btn');
+const copyConsoleBtn = document.getElementById('copy-console-btn');
 // Removed sourceTypeSelect and publisherFields - no longer needed
 
 // Initialize application
@@ -87,7 +88,9 @@ function setupEventListeners() {
   const publishStartDateInput = document.getElementById('publish-start-date');
   const publishEndDateInput = document.getElementById('publish-end-date');
   
-  publishStartDateInput.addEventListener('change', () => {
+  // Use 'blur' event so it only triggers when user finishes entering the date
+  publishStartDateInput.addEventListener('blur', () => {
+    // Only set if start date is valid and end date is empty
     if (publishStartDateInput.value && !publishEndDateInput.value) {
       publishEndDateInput.value = publishStartDateInput.value;
     }
@@ -97,6 +100,42 @@ function setupEventListeners() {
   clearConsoleBtn.addEventListener('click', () => {
     consoleContent.innerHTML = '';
     addConsoleEntry('Console cleared', 'info');
+  });
+  
+  // Copy console content
+  copyConsoleBtn.addEventListener('click', async () => {
+    try {
+      const text = consoleContent.textContent || consoleContent.innerText;
+      if (!text || text.trim() === '') {
+        showStatus('Console is empty', 'warning');
+        return;
+      }
+      await navigator.clipboard.writeText(text);
+      showStatus('Console content copied to clipboard', 'success');
+      // Visual feedback
+      const originalText = copyConsoleBtn.textContent;
+      copyConsoleBtn.textContent = '✓ Copied!';
+      setTimeout(() => {
+        copyConsoleBtn.textContent = originalText;
+      }, 2000);
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      // Fallback for older browsers
+      const text = consoleContent.textContent || consoleContent.innerText;
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showStatus('Console content copied to clipboard', 'success');
+      } catch (err) {
+        showStatus('Failed to copy console content', 'error');
+      }
+      document.body.removeChild(textarea);
+    }
   });
   
   // Close modal on outside click
