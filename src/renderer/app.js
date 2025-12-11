@@ -34,12 +34,41 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadConfig() {
   try {
     config = await window.electronAPI.getConfig();
+    updateEnvironmentDisplay();
     if (!config.apiKey) {
       showStatus('Please configure your API key in Settings before publishing.', 'warning');
     }
   } catch (error) {
     console.error('Error loading config:', error);
     showStatus('Error loading configuration. Please check Settings.', 'error');
+  }
+}
+
+// Update environment display badge
+function updateEnvironmentDisplay() {
+  const environmentNameEl = document.getElementById('environment-name');
+  if (!environmentNameEl) return;
+  
+  const envMap = {
+    'dev': 'Development',
+    'stage': 'Staging',
+    'prod': 'Production'
+  };
+  
+  const envName = envMap[config.environment] || 'Unknown';
+  environmentNameEl.textContent = envName;
+  
+  // Add color coding
+  const badge = document.getElementById('environment-badge');
+  if (badge) {
+    badge.className = 'environment-badge';
+    if (config.environment === 'prod') {
+      badge.classList.add('environment-prod');
+    } else if (config.environment === 'stage') {
+      badge.classList.add('environment-stage');
+    } else {
+      badge.classList.add('environment-dev');
+    }
   }
 }
 
@@ -312,6 +341,7 @@ async function saveSettings() {
     const result = await window.electronAPI.saveConfig(newConfig);
     if (result.success) {
       config = newConfig;
+      updateEnvironmentDisplay();
       closeSettingsModal();
       showStatus('Settings saved successfully', 'success');
       populateDefaults();
@@ -351,9 +381,21 @@ async function publishObituary() {
   statusMessage.classList.add('hidden');
   resultsSection.classList.add('hidden');
   
+  // Get full API endpoint URL
+  const API_BASE_URLS = {
+    dev: 'https://h8j5wx2ek8.execute-api.us-east-1.amazonaws.com/dev',
+    stage: 'https://osw92dhpje.execute-api.us-east-1.amazonaws.com/stage',
+    prod: 'https://eqvuex5md7.execute-api.us-east-1.amazonaws.com/prod'
+  };
+  const API_ENDPOINT = '/v1/obituaries/';
+  const baseUrl = API_BASE_URLS[config.environment] || API_BASE_URLS.prod;
+  const fullUrl = `${baseUrl}${API_ENDPOINT}`;
+  
   // Log request to console
   addConsoleEntry('=== API Request ===', 'request');
-  addConsoleEntry(`Endpoint: ${config.environment}`, 'request');
+  addConsoleEntry(`Environment: ${config.environment}`, 'request');
+  addConsoleEntry(`Endpoint: ${fullUrl}`, 'request');
+  addConsoleEntry('Method: POST', 'request');
   addConsoleEntry('Payload:', 'request');
   logToConsole(payload, 'request');
   

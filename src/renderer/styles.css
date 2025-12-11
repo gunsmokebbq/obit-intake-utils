@@ -26,9 +26,41 @@ header {
     border-bottom: 2px solid #ddd;
 }
 
+.header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 header h1 {
     color: #2c3e50;
     font-size: 28px;
+    margin: 0;
+}
+
+.environment-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+}
+
+.environment-badge span {
+    font-weight: 600;
+}
+
+.environment-prod {
+    background-color: #e74c3c;
+}
+
+.environment-stage {
+    background-color: #f39c12;
+}
+
+.environment-dev {
+    background-color: #3498db;
 }
 
 .btn-primary {
