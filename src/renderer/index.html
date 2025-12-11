@@ -115,49 +115,28 @@
                 <!-- Source Information Section -->
                 <section class="form-section">
                     <h2>Source Information</h2>
-                    <div class="form-group required">
-                        <label for="source-type">Source Type *</label>
-                        <select id="source-type" required>
-                            <option value="">-- Select --</option>
-                            <option value="publisher">Publisher</option>
-                            <option value="adn">ADN</option>
-                        </select>
-                    </div>
                     <div class="form-grid">
-                        <div class="form-group required">
-                            <label for="source">Source *</label>
-                            <input type="text" id="source" required placeholder="e.g., ipublish">
-                        </div>
                         <div class="form-group required">
                             <label for="source-reference-id">Source Reference ID *</label>
                             <input type="text" id="source-reference-id" required placeholder="Your reference ID">
                         </div>
-                        <div class="form-group">
-                            <label for="source-url">Source URL</label>
-                            <input type="url" id="source-url" placeholder="https://...">
-                        </div>
                     </div>
-                    
-                    <!-- Publisher-specific fields -->
-                    <div id="publisher-fields" class="hidden">
-                        <h3>Publisher Information</h3>
-                        <div class="form-grid">
-                            <div class="form-group required">
-                                <label for="provider">Provider *</label>
-                                <input type="text" id="provider" placeholder="e.g., ipublish">
-                            </div>
-                            <div class="form-group required">
-                                <label for="provider-reference-id">Provider Reference ID *</label>
-                                <input type="text" id="provider-reference-id" placeholder="Provider's reference ID">
-                            </div>
-                            <div class="form-group required">
-                                <label for="owner">Owner *</label>
-                                <input type="text" id="owner" placeholder="e.g., chicagotribune">
-                            </div>
-                            <div class="form-group required">
-                                <label for="owner-reference-id">Owner Reference ID *</label>
-                                <input type="text" id="owner-reference-id" placeholder="Owner's reference ID">
-                            </div>
+                    <small style="color: #7f8c8d; margin-top: 10px; display: block;">
+                        Note: Source Type is set to "Publisher" and Source is set to "ipublish" by default.
+                    </small>
+                </section>
+
+                <!-- Owner Information Section (Optional) -->
+                <section class="form-section">
+                    <h2>Owner Information <span style="font-weight: normal; font-size: 14px; color: #7f8c8d;">(Optional)</span></h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="owner">Owner</label>
+                            <input type="text" id="owner" placeholder="e.g., chicagotribune">
+                        </div>
+                        <div class="form-group">
+                            <label for="owner-reference-id">Owner Reference ID</label>
+                            <input type="text" id="owner-reference-id" placeholder="Owner's reference ID">
                         </div>
                     </div>
                 </section>
@@ -200,16 +179,9 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="settings-default-source">Default Source</label>
-                        <input type="text" id="settings-default-source" placeholder="e.g., ipublish">
-                    </div>
-                    <div class="form-group">
-                        <label for="settings-default-provider">Default Provider</label>
-                        <input type="text" id="settings-default-provider" placeholder="e.g., ipublish">
-                    </div>
-                    <div class="form-group">
                         <label for="settings-default-owner">Default Owner</label>
                         <input type="text" id="settings-default-owner" placeholder="e.g., chicagotribune">
+                        <small>Optional: Default owner value to pre-fill in the form</small>
                     </div>
                 </form>
             </div>

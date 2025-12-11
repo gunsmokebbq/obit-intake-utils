@@ -65,8 +65,6 @@ ipcMain.handle('get-config', async () => {
   return {
     apiKey: '',
     environment: 'prod',
-    defaultSource: 'ipublish',
-    defaultProvider: 'ipublish',
     defaultOwner: ''
   };
 });

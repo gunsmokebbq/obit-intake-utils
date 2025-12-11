@@ -2,8 +2,6 @@
 let config = {
   apiKey: '',
   environment: 'prod',
-  defaultSource: '',
-  defaultProvider: '',
   defaultOwner: ''
 };
 
@@ -19,8 +17,7 @@ const clearBtn = document.getElementById('clear-btn');
 const publishBtn = document.getElementById('publish-btn');
 const statusMessage = document.getElementById('status-message');
 const resultsSection = document.getElementById('results-section');
-const sourceTypeSelect = document.getElementById('source-type');
-const publisherFields = document.getElementById('publisher-fields');
+// Removed sourceTypeSelect and publisherFields - no longer needed
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', async () => {
@@ -72,24 +69,7 @@ function setupEventListeners() {
     }
   });
   
-  // Source type change - show/hide publisher fields
-  sourceTypeSelect.addEventListener('change', (e) => {
-    if (e.target.value === 'publisher') {
-      publisherFields.classList.remove('hidden');
-      // Mark publisher fields as required
-      ['provider', 'provider-reference-id', 'owner', 'owner-reference-id'].forEach(id => {
-        const field = document.getElementById(id);
-        field.required = true;
-      });
-    } else {
-      publisherFields.classList.add('hidden');
-      // Remove required from publisher fields
-      ['provider', 'provider-reference-id', 'owner', 'owner-reference-id'].forEach(id => {
-        const field = document.getElementById(id);
-        field.required = false;
-      });
-    }
-  });
+  // Source type is now fixed to "publisher", no event listener needed
   
   // Close modal on outside click
   settingsModal.addEventListener('click', (e) => {
@@ -101,12 +81,6 @@ function setupEventListeners() {
 
 // Populate default values from config
 function populateDefaults() {
-  if (config.defaultSource) {
-    document.getElementById('source').value = config.defaultSource;
-  }
-  if (config.defaultProvider) {
-    document.getElementById('provider').value = config.defaultProvider;
-  }
   if (config.defaultOwner) {
     document.getElementById('owner').value = config.defaultOwner;
   }
@@ -116,8 +90,6 @@ function populateDefaults() {
 function openSettingsModal() {
   document.getElementById('settings-api-key').value = config.apiKey || '';
   document.getElementById('settings-environment').value = config.environment || 'prod';
-  document.getElementById('settings-default-source').value = config.defaultSource || '';
-  document.getElementById('settings-default-provider').value = config.defaultProvider || '';
   document.getElementById('settings-default-owner').value = config.defaultOwner || '';
   settingsModal.classList.remove('hidden');
 }
@@ -131,8 +103,6 @@ async function saveSettings() {
   const newConfig = {
     apiKey: document.getElementById('settings-api-key').value.trim(),
     environment: document.getElementById('settings-environment').value,
-    defaultSource: document.getElementById('settings-default-source').value.trim(),
-    defaultProvider: document.getElementById('settings-default-provider').value.trim(),
     defaultOwner: document.getElementById('settings-default-owner').value.trim()
   };
   
@@ -290,38 +260,28 @@ function buildPayload() {
   if (obituaryType) payload.obituary.obituary_type = obituaryType;
   if (emailAddress) payload.obituary.email_address = emailAddress;
   
-  // Source info
-  const sourceType = document.getElementById('source-type').value;
-  const source = document.getElementById('source').value.trim();
+  // Source info - fixed to publisher/ipublish for first release
   const sourceReferenceId = document.getElementById('source-reference-id').value.trim();
-  const sourceUrl = document.getElementById('source-url').value.trim();
   
-  if (!sourceType || !source || !sourceReferenceId) {
-    showStatus('Source type, source, and source reference ID are required', 'error');
+  if (!sourceReferenceId) {
+    showStatus('Source reference ID is required', 'error');
     return null;
   }
   
-  payload.source_info.source_type = sourceType;
-  payload.source_info.source = source;
+  // Source type is always "publisher" and source is always "ipublish" for first release
+  payload.source_info.source_type = 'publisher';
+  payload.source_info.source = 'ipublish';
   payload.source_info.source_reference_id = sourceReferenceId;
-  if (sourceUrl) payload.source_info.source_url = sourceUrl;
   
-  // Publisher-specific fields
-  if (sourceType === 'publisher') {
-    const provider = document.getElementById('provider').value.trim();
-    const providerReferenceId = document.getElementById('provider-reference-id').value.trim();
-    const owner = document.getElementById('owner').value.trim();
-    const ownerReferenceId = document.getElementById('owner-reference-id').value.trim();
-    
-    if (!provider || !providerReferenceId || !owner || !ownerReferenceId) {
-      showStatus('All publisher fields (provider, provider reference ID, owner, owner reference ID) are required', 'error');
-      return null;
-    }
-    
-    payload.source_info.provider = provider;
-    payload.source_info.provider_reference_id = providerReferenceId;
-    payload.source_info.owner = owner;
-    payload.source_info.owner_reference_id = ownerReferenceId;
+  // Optional owner fields
+  const owner = document.getElementById('owner').value.trim();
+  const ownerReferenceId = document.getElementById('owner-reference-id').value.trim();
+  
+  // Only include owner fields if at least one is provided
+  if (owner || ownerReferenceId) {
+    // If one is provided, both should ideally be provided, but we'll allow partial
+    if (owner) payload.source_info.owner = owner;
+    if (ownerReferenceId) payload.source_info.owner_reference_id = ownerReferenceId;
   }
   
   // Version (timestamp)
