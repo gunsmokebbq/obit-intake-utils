@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obituary Publisher</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Obituary Publisher</h1>
+            <button id="settings-btn" class="btn-secondary">⚙️ Settings</button>
+        </header>
+
+        <main>
+            <!-- Status Messages -->
+            <div id="status-message" class="status-message hidden"></div>
+
+            <!-- Main Form -->
+            <form id="obituary-form">
+                <!-- Person Information Section -->
+                <section class="form-section">
+                    <h2>Person Information</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name-prefix">Prefix</label>
+                            <input type="text" id="name-prefix" placeholder="Dr., Father, etc.">
+                        </div>
+                        <div class="form-group required">
+                            <label for="name-first">First Name *</label>
+                            <input type="text" id="name-first" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="name-middle">Middle Name</label>
+                            <input type="text" id="name-middle">
+                        </div>
+                        <div class="form-group required">
+                            <label for="name-last">Last Name *</label>
+                            <input type="text" id="name-last" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="name-maiden">Maiden Name</label>
+                            <input type="text" id="name-maiden">
+                        </div>
+                        <div class="form-group">
+                            <label for="name-nickname">Nickname</label>
+                            <input type="text" id="name-nickname">
+                        </div>
+                        <div class="form-group">
+                            <label for="name-suffix">Suffix</label>
+                            <input type="text" id="name-suffix" placeholder="Jr., Sr., etc.">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="date-of-birth">Date of Birth</label>
+                            <input type="text" id="date-of-birth" placeholder="MMDDYYYY (e.g., 01221926)">
+                            <small>Format: MMDDYYYY (use 00 for unknown month/day)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="date-of-death">Date of Death</label>
+                            <input type="text" id="date-of-death" placeholder="MMDDYYYY (e.g., 05152021)">
+                            <small>Format: MMDDYYYY (use 00 for unknown month/day)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Age</label>
+                            <input type="number" id="age" min="0" max="150">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Obituary Information Section -->
+                <section class="form-section">
+                    <h2>Obituary Information</h2>
+                    <div class="form-group required">
+                        <label for="obituary-text">Obituary Text *</label>
+                        <textarea id="obituary-text" rows="10" required placeholder="Enter the obituary text or HTML..."></textarea>
+                        <small>⚠️ Note: Only Windows-1252 character set is supported. Extended characters will be converted.</small>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group required">
+                            <label for="publish-start-date">Publish Start Date *</label>
+                            <input type="date" id="publish-start-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="publish-end-date">Publish End Date</label>
+                            <input type="date" id="publish-end-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="print-start-date">Print Start Date</label>
+                            <input type="date" id="print-start-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="print-end-date">Print End Date</label>
+                            <input type="date" id="print-end-date">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="obituary-type">Obituary Type</label>
+                            <select id="obituary-type">
+                                <option value="">-- Select --</option>
+                                <option value="paid">Paid</option>
+                                <option value="free">Free</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="email-address">Email Address</label>
+                            <input type="email" id="email-address" placeholder="person@example.com">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Source Information Section -->
+                <section class="form-section">
+                    <h2>Source Information</h2>
+                    <div class="form-group required">
+                        <label for="source-type">Source Type *</label>
+                        <select id="source-type" required>
+                            <option value="">-- Select --</option>
+                            <option value="publisher">Publisher</option>
+                            <option value="adn">ADN</option>
+                        </select>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group required">
+                            <label for="source">Source *</label>
+                            <input type="text" id="source" required placeholder="e.g., ipublish">
+                        </div>
+                        <div class="form-group required">
+                            <label for="source-reference-id">Source Reference ID *</label>
+                            <input type="text" id="source-reference-id" required placeholder="Your reference ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="source-url">Source URL</label>
+                            <input type="url" id="source-url" placeholder="https://...">
+                        </div>
+                    </div>
+                    
+                    <!-- Publisher-specific fields -->
+                    <div id="publisher-fields" class="hidden">
+                        <h3>Publisher Information</h3>
+                        <div class="form-grid">
+                            <div class="form-group required">
+                                <label for="provider">Provider *</label>
+                                <input type="text" id="provider" placeholder="e.g., ipublish">
+                            </div>
+                            <div class="form-group required">
+                                <label for="provider-reference-id">Provider Reference ID *</label>
+                                <input type="text" id="provider-reference-id" placeholder="Provider's reference ID">
+                            </div>
+                            <div class="form-group required">
+                                <label for="owner">Owner *</label>
+                                <input type="text" id="owner" placeholder="e.g., chicagotribune">
+                            </div>
+                            <div class="form-group required">
+                                <label for="owner-reference-id">Owner Reference ID *</label>
+                                <input type="text" id="owner-reference-id" placeholder="Owner's reference ID">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <button type="button" id="clear-btn" class="btn-secondary">Clear Form</button>
+                    <button type="submit" id="publish-btn" class="btn-primary">Publish Obituary</button>
+                </div>
+            </form>
+
+            <!-- Results Section -->
+            <div id="results-section" class="results-section hidden">
+                <h2>Publish Results</h2>
+                <div id="results-content"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button id="close-settings" class="btn-close">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="settings-form">
+                    <div class="form-group required">
+                        <label for="settings-api-key">API Key *</label>
+                        <input type="password" id="settings-api-key" required>
+                        <small>Your API key for authentication</small>
+                    </div>
+                    <div class="form-group required">
+                        <label for="settings-environment">Environment *</label>
+                        <select id="settings-environment" required>
+                            <option value="prod">Production</option>
+                            <option value="stage">Staging</option>
+                            <option value="dev">Development</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="settings-default-source">Default Source</label>
+                        <input type="text" id="settings-default-source" placeholder="e.g., ipublish">
+                    </div>
+                    <div class="form-group">
+                        <label for="settings-default-provider">Default Provider</label>
+                        <input type="text" id="settings-default-provider" placeholder="e.g., ipublish">
+                    </div>
+                    <div class="form-group">
+                        <label for="settings-default-owner">Default Owner</label>
+                        <input type="text" id="settings-default-owner" placeholder="e.g., chicagotribune">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancel-settings" class="btn-secondary">Cancel</button>
+                <button type="button" id="save-settings" class="btn-primary">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
